@@ -9,21 +9,21 @@ class BugsMusic(object):
     def __str__(self): #이 안에 들어있는
         return self.url
 
-    @staticmethod
-    def scrap(url, class_name):
 
-        soup = BeautifulSoup(urlopen(url), 'lxml')
+    def scrap(self, class_name):
+
+        soup = BeautifulSoup(urlopen(self.url), 'lxml')
         count = 0
         print("< ARTIST >")
-        for link1 in soup.find_all(name='p', attrs=({"class": class_name })):
+        for link1 in soup.find_all(name='p', attrs=({"class": class_name[0] })):
             count += 1
             print(f'순위: {str(count)} ')
-            print( f'{class_name}: {link1.find("a").text}')
+            print( f'{class_name[0]}: {link1.find("a").text}')
         print("< TITLE >")
-        for link1 in soup.find_all(name='p', attrs=({"class": class_name })):
+        for link1 in soup.find_all(name='p', attrs=({"class": class_name[1] })):
             count += 1
             print(f'순위: {str(count)} ')
-            print( f'{class_name}: {link1.find("a").text}')
+            print(f'{class_name[1]}: {link1.find("a").text}')
 
     #https://music.bugs.co.kr/chart/track/realtime/total?chartdate=20210524&charthour=15
     @staticmethod
@@ -31,20 +31,13 @@ class BugsMusic(object):
 
         bugs = BugsMusic()
         while 1:
-            menu = int(input('0.Exit\n1.Input URL\n2.Print URL'))
+            menu = int(input('0.Exit\n1.Input URL\n2.Get Ranking'))
             if menu == 0:
                 break
             elif menu == 1:
-                BugsMusic.url = input('Input URL')
+                bugs.url = input('Input URL')
             elif menu == 2:
-                print(f':입력된 URL :::::::::::::::::::: {bugs.url}')
-
-                print('------------------------- ARTIST RANKING ---------------------------')
-                BugsMusic.class_name("artist")
-
-                print('------------------------- TITLE RANKING ---------------------------')
-                BugsMusic.class_name("title")
-
+                bugs.scrap(["artist","title"])
             else:
                 print('Wrong number')
                 continue
