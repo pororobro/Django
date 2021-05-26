@@ -1,23 +1,41 @@
+from bs4 import BeautifulSoup
+import requests
+
 class Melon(object):
 
-    url = ''
+    url = 'https://www.melon.com/chart/index.htm?dayTime='
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    class_name = []
 
-    def set_url(self):
-        self.url = url
+
+    def set_url(self, time):
+        self.url = requests.get(f'{self.url}{time}', headers=self.headers).text
+
+
+
+    def get_ranking(self):
+        soup = BeautifulSoup(self.url, 'lxml')
+        print('-----------------제목-----------------')
+        ls = soup.find_all('div', {'class': self.class_name[0]})
+        for i in ls:
+            print(f' {i.find("a").text}')
+
+
 
     @staticmethod
     def main():
-        melon = Melon()
+        m = Melon()
         while 1:
-            menu = input('0.Exit 1.Input Url 2.Rank 1-100')
+            menu = input('0.Exit 1.URL 2.Get Ranking')
             if menu == '0':
                 break
             elif menu == '1':
-                melon.url = input('Input URL')
+                m.set_url(input('날짜'))
             elif menu == '2':
-                melon.get_ranking()
+                m.class_name.append('ellipsis rank01')
+                m.class_name.append('ellipsis rank02')
+                m.get_ranking()
             else:
-                print('Wrong number')
                 continue
 
 Melon.main()
