@@ -1,8 +1,10 @@
+import pandas as pd
 from bs4 import BeautifulSoup
 import requests
-import pandas as pd
+
 
 class BugsMusic(object):
+
     url = 'https://music.bugs.co.kr/chart/track/realtime/total?'
     headers = {'User-Agent': 'Mozilla/5.0'}
     class_name = []
@@ -13,18 +15,25 @@ class BugsMusic(object):
 
     def set_url(self, detail):
         self.url = requests.get(f'{self.url}{detail}', headers=self.headers).text
+
     def get_ranking(self):
         soup = BeautifulSoup(self.url, 'lxml')
         ls1 = soup.find_all(name='p', attrs=({"class":self.class_name[1]}))
-        ls2 = soup.find_all(name='p', attrs=({"class":self.class_name[0]}))
+        ls2 = soup.find_all(name='p', attrs=({"class": self.class_name[0]}))
         for i in ls1:
             self.title_ls.append(i.find("a").text)
         for i in ls2:
-            self.artist_ls.append(i.find('a').text)
+            self.artist_ls.append(i.find("a").text)
 
+    def insert_dict(self):
 
-    def insert_title_dict(self):
-
+        # 방법 1. range
+        for i in range(0, len(self.title_ls)):
+            self.dict[self.title_ls[i]] = self.artist_ls[i]
+        # 방법 2. zip
+        for i, j in zip(self.title_ls, self.artist_ls):
+            self.dict[i] = j
+        # 방법 3. enumerate
         for i, j in enumerate(self.title_ls):
             self.dict[j] = self.artist_ls[i]
 
@@ -34,14 +43,23 @@ class BugsMusic(object):
         dt = self.dict
         self.df = pd.DataFrame.from_dict(dt, orient='index')
         print(self.df)
+
     def df_to_csv(self):
-        path = './csv/bugs.csv'
-        self.df.to_csv(path, sep='/', na_rep='-')
+        path = './data/bugs.csv'
+        self.df.to_csv(path, sep=',', na_rep='NaN')
+
+
+
     @staticmethod
     def main():
         bugs = BugsMusic()
         while 1:
-            menu = input('0-exit, 1-input time, 2-output, 3-print dict 4-dict to dataframe 5-csv')
+            menu = input('0-exit\n'
+                         '1-input time\n'
+                         '2-output\n'
+                         '3-print dict\n'
+                         '4-dict to dataframe\n'
+                         '5-df to csv')
             if menu == '0':
                 break
             elif menu == '1':
@@ -51,12 +69,15 @@ class BugsMusic(object):
                 bugs.class_name.append("title")
                 bugs.get_ranking()
             elif menu == '3':
-                bugs.insert_title_dict()
+                bugs.insert_dict()
+
             elif menu == '4':
                 bugs.dict_to_dataframe()
+
             elif menu == '5':
                 bugs.df_to_csv()
             else:
                 print('Wrong Number')
                 continue
+
 BugsMusic.main()

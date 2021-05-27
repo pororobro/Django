@@ -14,10 +14,13 @@ class Melon(object):
 
 
     def get_ranking(self):
+        count = 0
         soup = BeautifulSoup(self.url, 'lxml')
         print('-----------------제목-----------------')
         ls = soup.find_all('div', {'class': self.class_name[0]})
         for i in ls:
+            count += 1
+            print(f'순위: {str(count)} ')
             print(f' {i.find("a").text}')
 
 
@@ -26,7 +29,7 @@ class Melon(object):
     def main():
         m = Melon()
         while 1:
-            menu = input('0.Exit 1.URL 2.Get Ranking')
+            menu = input('0.Exit 1.URL 2.Get Ranking 3.')
             if menu == '0':
                 break
             elif menu == '1':
