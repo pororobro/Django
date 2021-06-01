@@ -8,20 +8,46 @@ class Controller(object):
     service = Service()
 
     def modeling(self, train, test) -> object:
-
         service = self.service
-        this = self.preprocss(train, test)
+        this = self.preprocess(train, test)
         this.label = service.create_label(this)
         this.train = service.create_train(this)
         return this
 
-    def preprocss(self, train, test) -> object: #전처리 본격적으로 하기전에 데이터를 다듬음
+    def preprocess(self, train, test) -> object: #전처리 본격적으로 하기전에 데이터를 다듬음
         service = self.service
         this = self.dataset
+        #초기 모델 생성
         this.train = service.new_model(train)
         this.test = service.new_model(test)
-        print(f'Train의 type은 {type(this.train)}이다')
-        print(f'Train의 column은 {this.train.columns}이다')
-        print(f'Train의 상위 5개 데이터는 {this.train.head()}이다')
-        print(f'Train의 하위 5개 데이터는 {this.train.tail()}이다')
+
+
+
+
+
+
+        #불필요한 feature (Cabin, Ticket) 제거
+        this = service.drop_feature(this,'Cabin')
+        this = service.drop_feature(this, 'Ticket')
+        # norminal, ordinal 로 정형화
+        this = service.embarked_nominal(this)
+        this = service.title_norminal(this)
+        # 불필요한 feature(name) 제거
+        this = service.drop_feature(this, 'Name')
+        this = service.gender_norminal(this)
+        this = service.drop_feature(this, 'Sex')
+        self.print_this(this)
+
+        return this
+
+    @staticmethod
+    def print_this(this):
+
+        print('*'*100)
+        print(f'Train 의 type 은\n{type(this.train)}이다')
+        print(f'Train 의 column 은\n{this.train.columns}이다')
+        print(f'Train 의 상위 5개 행은\n{this.train.head()}이다')
+        print(f'Test 의 type 은 {type(this.test)}이다')
+        print(f'Test 의 column 은 {this.test.columns}이다')
+        print(f'Test 의 상위 5개 행은 {this.test.head()}이다')
         return this
