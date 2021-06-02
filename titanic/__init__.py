@@ -13,15 +13,15 @@ if __name__ == '__main__':
         elif menu == '1':
             plot = Plot('train.csv')
             #plot.draw_survived_dead()
-            plot.draw_pclass()
+            #plot.draw_pclass()
             #plot.draw_sex()
-            #plot.draw_embarked()
-
+            plot.draw_embarked()
         elif menu == '2':
             controller.modeling('train.csv', 'test.csv')
         elif menu == '3':
-            pass
+            df = controller.learning('train.csv','test.csv')
         elif menu == '4':
-            pass
+            controller.submit('train.csv', 'test.csv')
+
         else:
             continue
